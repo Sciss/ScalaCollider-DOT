@@ -18,8 +18,9 @@ import java.io.{File, FileOutputStream}
 import java.text.NumberFormat
 import java.util.Locale
 
-import de.sciss.synth.ugen.Constant
-import de.sciss.synth.{UGenGraph, UGenSpec, UndefinedRate}
+import de.sciss.synth.UGenSpec.{Argument, ArgumentType, Input, Output, SignalShape}
+import de.sciss.synth.ugen.{BinaryOpUGen, Constant, UnaryOpUGen}
+import de.sciss.synth.{UGenGraph, UGenSpec, UndefinedRate, audio, control, scalar}
 
 import scala.language.implicitConversions
 import scala.util.control.NonFatal
@@ -56,12 +57,18 @@ object ScalaColliderDOT {
                           constantFontColor: String, constantDefaultFontColor: String) extends ConfigLike
 
   final class ConfigBuilder extends ConfigLike {
+    /** The default UGen graph is empty. */
     var input                     : UGenGraph = UGenGraph(Vector.empty, Vector.empty, Vector.empty, Vector.empty)
+    /** The default name is `"UGenGraph"`. */
     var graphName                 : String    = "UGenGraph"
+    /** The default is to have a bold name font. */
     var nameBoldFont              : Boolean   = true
-    var nameFontSize              : Int       = 18
+    /** The default is to have font size 16 for the UGen name. */
+    var nameFontSize              : Int       = 16
     var nameFontColor             : String    = ""
+    /** The default is to have blue color for constant arguments. */
     var constantFontColor         : String    = "blue"
+    /** The default is to have gray color for default constants. */
     var constantDefaultFontColor  : String    = "gray"
   }
 
@@ -91,13 +98,54 @@ object ScalaColliderDOT {
   }
 
   private lazy val ugenMap: Map[String, UGenSpec] = try {
-      UGenSpec.standardUGens ++ UGenSpec.thirdPartyUGens
+      var res = UGenSpec.standardUGens ++ UGenSpec.thirdPartyUGens
+      // cf. https://github.com/Sciss/ScalaColliderUGens/issues/36
+      if (!res.contains("MulAdd")) res += ("MulAdd" ->
+        UGenSpec("MulAdd", Set.empty, UGenSpec.Rates.Set(Set(audio, control, scalar)),
+          args = Vector(
+            Argument("in" , ArgumentType.GE(SignalShape.Generic), defaults = Map.empty, rates = Map.empty),
+            Argument("mul", ArgumentType.GE(SignalShape.Generic), defaults = Map.empty, rates = Map.empty),
+            Argument("add", ArgumentType.GE(SignalShape.Generic), defaults = Map.empty, rates = Map.empty)
+          ), inputs = Vector(
+            Input("in", Input.Single), Input("mul", Input.Single), Input("add", Input.Single)
+          ), outputs = Vector(
+            Output(name = None, shape = SignalShape.Generic, variadic = None)
+          ), doc = None)
+        )
+      if (!res.contains("UnaryOpUGen")) res += ("UnaryOpUGen" ->
+        UGenSpec("UnaryOpUGen", Set.empty, UGenSpec.Rates.Set(Set(audio, control, scalar)),
+          args = Vector(
+            Argument("in", ArgumentType.GE(SignalShape.Generic), defaults = Map.empty, rates = Map.empty)
+          ), inputs = Vector(
+            Input("in", Input.Single)
+          ), outputs = Vector(
+            Output(name = None, shape = SignalShape.Generic, variadic = None)
+          ), doc = None)
+        )
+      if (!res.contains("BinaryOpUGen")) res += ("BinaryOpUGen" ->
+          UGenSpec("BinaryOpUGen", Set.empty, UGenSpec.Rates.Set(Set(audio, control, scalar)),
+            args = Vector(
+              Argument("a", ArgumentType.GE(SignalShape.Generic), defaults = Map.empty, rates = Map.empty),
+              Argument("b", ArgumentType.GE(SignalShape.Generic), defaults = Map.empty, rates = Map.empty)
+            ), inputs = Vector(
+              Input("a", Input.Single), Input("b", Input.Single)
+            ), outputs = Vector(
+              Output(name = None, shape = SignalShape.Generic, variadic = None)
+            ), doc = None)
+        )
+      res
     } catch {
       case NonFatal(e) =>
         Console.err.println("While initializing UGen specs:")
         e.printStackTrace()
         Map.empty
     }
+
+  private def escapeHTML(in: String): String =
+    in.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+
+  private def escapeName(in: String): String =
+    in.replaceAll(" ", "_").replaceAll("-", "_")
 
   /** Renders to DOT, returning it as a string. */
   def apply(config: Config): String = {
@@ -108,74 +156,85 @@ object ScalaColliderDOT {
 
     val nodeBuilder = new StringBuilder
     val edgeBuilder = new StringBuilder
-    nodeBuilder.append(s"digraph $graphName {\n")
+    nodeBuilder.append(s"digraph ${escapeName(graphName)} {\n")
     val nl          = "\n"
 
     input.ugens.zipWithIndex.foreach { case (iu, iui) =>
-      val ugenName  = iu.ugen.name
+      val ugenName0 = iu.ugen.name
       val numIns    = iu.ugen.numInputs
       val numOuts   = iu.ugen.numOutputs
-      val specOpt   = ugenMap.get(ugenName)
+      val specOpt   = ugenMap.get(ugenName0)
 
       val nodeLabel = s"ugen$iui"
       nodeBuilder.append(s"  node [shape=plaintext] $nodeLabel [label=<\n")
       nodeBuilder.append( "      <TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">\n")
       nodeBuilder.append( "      <TR>\n")
-      iu.inputSpecs.zipWithIndex.foreach {
-        case ((ugenIdx, outIdx), inIdx) =>
-          val inName = specOpt.flatMap { spec =>
-            val ins = spec.inputs
-            if (inIdx < ins.size) {
-              val in = ins(inIdx)
-              Some(if (in.variadic) s"${in.arg}0" else in.arg)
-            } else ins.lastOption.flatMap { in =>
-              if (in.variadic) Some(s"${in.arg}${inIdx - ins.size - 1}") else None
-            }
-          } getOrElse s"in$inIdx"
-
-          val isConstant = ugenIdx < 0
-          val inCell = if (!isConstant) inName else {
-            val c     = cs(outIdx)
-            val cStr  = nf.format(c)
-            val colr  = specOpt.fold("") { spec =>
+      if (numIns > 0) {
+        iu.inputSpecs.zipWithIndex.foreach {
+          case ((ugenIdx, outIdx), inIdx) =>
+            val inName = specOpt.flatMap { spec =>
               val ins = spec.inputs
-              val isDefault = inIdx < ins.size && {
+              if (inIdx < ins.size) {
                 val in = ins(inIdx)
-                spec.argMap.get(in.arg).exists { arg =>
-                  val defOpt = arg.defaults.get(iu.ugen.rate).orElse(arg.defaults.get(UndefinedRate))
-                  defOpt.map(_.toGE).contains(Constant(c))
-                }
+                Some(if (in.variadic) s"${in.arg}0" else in.arg)
+              } else ins.lastOption.flatMap { in =>
+                if (in.variadic) Some(s"${in.arg}${inIdx - (ins.size - 1)}") else None
               }
-              if (isDefault) constantDefaultFontColor else constantFontColor
+            } getOrElse (if (numIns == 1) "in" else s"in$inIdx")
+
+            val isConstant = ugenIdx < 0
+            val inCell = if (!isConstant) inName else {
+              val c     = cs(outIdx)
+              val cStr  = nf.format(c)
+              val colr  = specOpt.fold("") { spec =>
+                val ins = spec.inputs
+                val isDefault = inIdx < ins.size && {
+                  val in = ins(inIdx)
+                  spec.argMap.get(in.arg).exists { arg =>
+                    val defOpt = arg.defaults.get(iu.ugen.rate).orElse(arg.defaults.get(UndefinedRate))
+                    defOpt.map(_.toGE).contains(Constant(c))
+                  }
+                }
+                if (isDefault) constantDefaultFontColor else constantFontColor
+              }
+              if (colr.isEmpty) s"$inName: $cStr" else s"""$inName: <FONT COLOR="$colr">$cStr</FONT>"""
             }
-            if (colr.isEmpty) s"$inName: $cStr" else s"""$inName: <FONT COLOR="$colr">$cStr</FONT>"""
-          }
 
-          val inLabel = s"in$inIdx"
-          nodeBuilder.append(s"""        <TD PORT="$inLabel">$inCell</TD>$nl""")
+            val inLabel = s"in$inIdx"
+            nodeBuilder.append(s"""        <TD PORT="$inLabel">$inCell</TD>$nl""")
 
-          if (!isConstant) {
-            edgeBuilder.append(s"ugen$ugenIdx:out$outIdx -> $nodeLabel:$inLabel;\n")
-          }
+            if (!isConstant) {
+              edgeBuilder.append(s"  ugen$ugenIdx:out$outIdx -> $nodeLabel:$inLabel;\n")
+            }
+        }
+        nodeBuilder.append("      </TR><TR>\n")
       }
-      nodeBuilder.append("      </TR><TR>\n")
-      val ugenName1 = ugenName  // XXX TODO --- replace UnaryOpUGen and BinaryOpUGGen
-      val nameCell0 = if (!nameBoldFont)     ugenName1 else s"<B>$ugenName1</B>"
+      val ugenName1 = ugenName0 match {
+        case "UnaryOpUGen"  => UnaryOpUGen .Op(iu.ugen.specialIndex).name.toLowerCase(Locale.US)
+        case "BinaryOpUGen" => BinaryOpUGen.Op(iu.ugen.specialIndex).name.toLowerCase(Locale.US)
+        case other => other
+      }
+      val ugenName = escapeHTML(ugenName1)
+      val nameCell0 = if (!nameBoldFont)     ugenName else s"<B>$ugenName</B>"
       val nameCell  = if (nameFontSize == 0) nameCell0 else s"""<FONT POINT-SIZE="$nameFontSize">$nameCell0</FONT>"""
       nodeBuilder.append(s"""        <TD COLSPAN="${math.max(1, math.max(numIns, numOuts))}">$nameCell</TD>$nl""")
-      nodeBuilder.append("      </TR><TR>\n")
-      for (outIdx <- 0 until numOuts) {
-        val outName = specOpt.flatMap { spec =>
-          val outs = spec.outputs
-          if (outIdx < outs.size) {
-            val out = outs(outIdx)
-            Some(if (out.variadic.isDefined) s"${out.name}$outIdx" else out.name)
-          } else outs.lastOption.flatMap { out =>
-            if (out.variadic.isDefined) Some(s"$out.name}${outIdx - outs.size - 1}") else None
-          }
-        }  getOrElse (if (numOuts == 1) "out" else s"out$outIdx")
-        val outLabel = s"out$outIdx"
-        nodeBuilder.append(s"""        <TD PORT="$outLabel">$outName</TD>$nl""")
+      if (numOuts > 0) {
+        nodeBuilder.append("      </TR><TR>\n")
+        for (outIdx <- 0 until numOuts) {
+          val outName = specOpt.flatMap { spec =>
+            val outs = spec.outputs
+            if (outIdx < outs.size) {
+              val out = outs(outIdx)
+              val n = out.name.getOrElse("out")
+              Some(if (out.variadic.isDefined) s"$n$outIdx" else n)
+            } else outs.lastOption.flatMap { out =>
+              val n = out.name.getOrElse("out")
+              if (out.variadic.isDefined) Some(s"$n${outIdx - (outs.size - 1)}") else None
+            }
+          }  getOrElse (if (numOuts == 1) "out" else s"out$outIdx")
+          val outLabel = s"out$outIdx"
+          nodeBuilder.append(s"""        <TD PORT="$outLabel">$outName</TD>$nl""")
+        }
       }
       nodeBuilder.append("      </TR>\n")
       nodeBuilder.append("      </TABLE>\n")
