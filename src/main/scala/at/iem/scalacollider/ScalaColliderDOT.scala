@@ -142,7 +142,7 @@ object ScalaColliderDOT {
     }
 
   private def escapeHTML(in: String): String =
-    in.replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+    in.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
 
   private def escapeName(in: String): String =
     in.replaceAll(" ", "_").replaceAll("-", "_")
