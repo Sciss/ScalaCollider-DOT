@@ -1,5 +1,5 @@
 name               := "ScalaCollider-DOT"
-version            := "0.1.0-SNAPSHOT"
+version            := "0.1.0"
 organization       := "at.iem"
 description        := "Utility for exporting a ScalaCollider UGen Graph as GraphViz .dot file"
 homepage           := Some(url(s"https://github.com/iem-projects/${name.value}"))

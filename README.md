@@ -12,7 +12,7 @@ See `src/test` for an example usage.
 
 ## linking
 
-__TODO: this is not yet published__ The following artifact is available from Maven Central:
+The following artifact is available from Maven Central:
 
     "at.iem" %% "scalacollider-dot" % v
 
