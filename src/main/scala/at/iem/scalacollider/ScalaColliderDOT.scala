@@ -192,7 +192,7 @@ object ScalaColliderDOT {
                   val in = ins(inIdx)
                   spec.argMap.get(in.arg).exists { arg =>
                     val defOpt = arg.defaults.get(iu.ugen.rate).orElse(arg.defaults.get(UndefinedRate))
-                    defOpt.map(_.toGE).contains(Constant(c))
+                    defOpt.exists(_.toGE == Constant(c))
                   }
                 }
                 if (isDefault) constantDefaultFontColor else constantFontColor
