@@ -22,6 +22,7 @@ import de.sciss.synth.UGenSpec.{Argument, ArgumentType, Input, Output, SignalSha
 import de.sciss.synth.ugen.{BinaryOpUGen, Constant, UnaryOpUGen}
 import de.sciss.synth.{UGenGraph, UGenSpec, UndefinedRate, audio, control, scalar}
 
+import scala.collection.{breakOut, SortedMap}
 import scala.language.implicitConversions
 import scala.util.control.NonFatal
 
@@ -151,8 +152,10 @@ object ScalaColliderDOT {
   def apply(config: Config): String = {
     import config._
     val cs = input.constants
+    val cn = input.controlNames.map(_.swap)(breakOut): SortedMap[Int, String]
     val nf = NumberFormat.getInstance(Locale.US)
     nf.setMaximumFractionDigits(4)
+    nf.setGroupingUsed(false)
 
     val nodeBuilder = new StringBuilder
     val edgeBuilder = new StringBuilder
@@ -221,7 +224,14 @@ object ScalaColliderDOT {
       if (numOuts > 0) {
         nodeBuilder.append("      </TR><TR>\n")
         for (outIdx <- 0 until numOuts) {
-          val outName = specOpt.flatMap { spec =>
+          val outNameOpt = if (ugenName0 == "Control" || ugenName == "AudioControl" || ugenName == "TrigControl") {
+            val ctlIdx  = iu.ugen.specialIndex + outIdx
+            val lastOpt = cn.until(ctlIdx + 1).lastOption
+            lastOpt.collect {
+              case (startIdx, ctlName) if startIdx + numOuts > ctlIdx => ctlName
+            }
+          }
+          else specOpt.flatMap { spec =>
             val outs = spec.outputs
             if (outIdx < outs.size) {
               val out = outs(outIdx)
@@ -231,7 +241,8 @@ object ScalaColliderDOT {
               val n = out.name.getOrElse("out")
               if (out.variadic.isDefined) Some(s"$n${outIdx - (outs.size - 1)}") else None
             }
-          }  getOrElse (if (numOuts == 1) "out" else s"out$outIdx")
+          }
+          val outName = outNameOpt.getOrElse(if (numOuts == 1) "out" else s"out$outIdx")
           val outLabel = s"out$outIdx"
           nodeBuilder.append(s"""        <TD PORT="$outLabel">$outName</TD>$nl""")
         }
