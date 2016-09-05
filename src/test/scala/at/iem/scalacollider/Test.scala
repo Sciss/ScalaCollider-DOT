@@ -34,6 +34,7 @@ object Test extends App {
   def printDef(sd: SynthDef): Unit = {
     config.input      = sd.graph
     config.graphName  = sd.name
+    config.rateColors = true
     val res           = ScalaColliderDOT(config)
     println(res)
   }

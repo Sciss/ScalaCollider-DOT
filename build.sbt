@@ -1,5 +1,5 @@
 name               := "ScalaCollider-DOT"
-version            := "0.1.0"
+version            := "0.2.0"
 organization       := "at.iem"
 description        := "Utility for exporting a ScalaCollider UGen Graph as GraphViz .dot file"
 homepage           := Some(url(s"https://github.com/iem-projects/${name.value}"))
@@ -9,8 +9,8 @@ crossScalaVersions := Seq("2.11.8", "2.10.6")
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xfuture")
 
-lazy val scalaColliderVersion = "1.19.0"
-lazy val ugensVersion         = "1.15.0"
+lazy val scalaColliderVersion = "1.20.0"
+lazy val ugensVersion         = "1.15.2"
 
 libraryDependencies ++= Seq(
   "de.sciss" %% "scalacollider"           % scalaColliderVersion,

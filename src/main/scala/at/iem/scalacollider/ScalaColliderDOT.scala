@@ -20,7 +20,7 @@ import java.util.Locale
 
 import de.sciss.synth.UGenSpec.{Argument, ArgumentType, Input, Output, SignalShape}
 import de.sciss.synth.ugen.{BinaryOpUGen, Constant, UnaryOpUGen}
-import de.sciss.synth.{UGenGraph, UGenSpec, UndefinedRate, audio, control, scalar}
+import de.sciss.synth.{UGenGraph, UGenSpec, UndefinedRate, audio, control, scalar, demand}
 
 import scala.collection.{breakOut, SortedMap}
 import scala.language.implicitConversions
@@ -42,6 +42,8 @@ object ScalaColliderDOT {
     def constantFontColor: String
     /** HTML color for constant argument values that correspond to the UGen's defaults. Empty for default color. */
     def constantDefaultFontColor: String
+    /** Boolean indicating whether to use different colors for the UGen computation rates or not. Default is false. */
+    def rateColors: Boolean
   }
 
   object Config {
@@ -51,11 +53,12 @@ object ScalaColliderDOT {
       new Config(input = b.input, graphName = b.graphName,
         nameBoldFont = b.nameBoldFont, nameFontSize = b.nameFontSize,
         nameFontColor = b.nameFontColor, constantFontColor = b.constantFontColor,
-        constantDefaultFontColor = b.constantDefaultFontColor)
+        constantDefaultFontColor = b.constantDefaultFontColor, rateColors = b.rateColors)
   }
   final case class Config(input: UGenGraph, graphName: String,
                           nameBoldFont: Boolean, nameFontSize: Int, nameFontColor: String,
-                          constantFontColor: String, constantDefaultFontColor: String) extends ConfigLike
+                          constantFontColor: String, constantDefaultFontColor: String, rateColors: Boolean)
+    extends ConfigLike
 
   final class ConfigBuilder extends ConfigLike {
     /** The default UGen graph is empty. */
@@ -70,7 +73,9 @@ object ScalaColliderDOT {
     /** The default is to have blue color for constant arguments. */
     var constantFontColor         : String    = "blue"
     /** The default is to have gray color for default constants. */
-    var constantDefaultFontColor  : String    = "gray"
+    var constantDefaultFontColor  : String    = "#707070"
+    /** The default is to not indicate UGen rate by color. */
+    var rateColors                : Boolean   = false
   }
 
   /** Renders to DOT, writing it to a given output file. */
@@ -220,7 +225,16 @@ object ScalaColliderDOT {
       val ugenName = escapeHTML(ugenName1)
       val nameCell0 = if (!nameBoldFont)     ugenName else s"<B>$ugenName</B>"
       val nameCell  = if (nameFontSize == 0) nameCell0 else s"""<FONT POINT-SIZE="$nameFontSize">$nameCell0</FONT>"""
-      nodeBuilder.append(s"""        <TD COLSPAN="${math.max(1, math.max(numIns, numOuts))}">$nameCell</TD>$nl""")
+      val nameCellBg = if (!rateColors)      "" else {
+        val colrName = iu.ugen.rate match {
+          case `audio`    => "#F0B0B0"
+          case `control`  => "#C0C0FF"
+          case `scalar`   => "#D8D8D8"
+          case `demand`   => "#B0F0B0"
+        }
+        s""" BGCOLOR="$colrName""""
+      }
+      nodeBuilder.append(s"""        <TD COLSPAN="${math.max(1, math.max(numIns, numOuts))}"$nameCellBg>$nameCell</TD>$nl""")
       if (numOuts > 0) {
         nodeBuilder.append("      </TR><TR>\n")
         for (outIdx <- 0 until numOuts) {
