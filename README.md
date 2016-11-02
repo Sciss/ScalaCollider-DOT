@@ -16,7 +16,7 @@ The following artifact is available from Maven Central:
 
     "at.iem" %% "scalacollider-dot" % v
 
-The current stable version `v` is `"0.3.0"`.
+The current stable version `v` is `"0.4.0"`.
 
 ## building
 
