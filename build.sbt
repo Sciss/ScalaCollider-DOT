@@ -1,16 +1,24 @@
-name               := "ScalaCollider-DOT"
-version            := "0.4.0"
+lazy val baseName  = "ScalaCollider-DOT"
+lazy val baseNameL = baseName.toLowerCase
+
+lazy val projectVersion = "0.4.1"
+lazy val mimaVersion    = "0.4.0"
+
+name               := baseName
+version            := projectVersion
 organization       := "at.iem"
 description        := "Utility for exporting a ScalaCollider UGen Graph as GraphViz .dot file"
 homepage           := Some(url(s"https://github.com/iem-projects/${name.value}"))
 licenses           := Seq("lgpl" -> url("https://www.gnu.org/licenses/lgpl-2.1.txt"))
 scalaVersion       := "2.11.8"
-crossScalaVersions := Seq("2.11.8", "2.10.6")
+crossScalaVersions := Seq("2.12.1", "2.11.8", "2.10.6")
 
-scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xfuture")
+mimaPreviousArtifacts := Set("at.iem" %% baseNameL % mimaVersion)
 
-lazy val scalaColliderVersion = "1.22.0"
-lazy val ugensVersion         = "1.16.1"
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xfuture", "-Xlint")
+
+lazy val scalaColliderVersion = "1.22.3"
+lazy val ugensVersion         = "1.16.4"
 
 libraryDependencies ++= Seq(
   "de.sciss" %% "scalacollider"           % scalaColliderVersion,
