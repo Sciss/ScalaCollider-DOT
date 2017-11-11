@@ -116,7 +116,7 @@ object ScalaColliderDOT {
             Input("in", Input.Single), Input("mul", Input.Single), Input("add", Input.Single)
           ), outputs = Vector(
             Output(name = None, shape = SignalShape.Generic, variadic = None)
-          ), doc = None)
+          ), doc = None, elemOption = None)
         )
       if (!res.contains("UnaryOpUGen")) res += ("UnaryOpUGen" ->
         UGenSpec("UnaryOpUGen", Set.empty, UGenSpec.Rates.Set(Set(audio, control, scalar)),
@@ -126,7 +126,7 @@ object ScalaColliderDOT {
             Input("in", Input.Single)
           ), outputs = Vector(
             Output(name = None, shape = SignalShape.Generic, variadic = None)
-          ), doc = None)
+          ), doc = None, elemOption = None)
         )
       if (!res.contains("BinaryOpUGen")) res += ("BinaryOpUGen" ->
           UGenSpec("BinaryOpUGen", Set.empty, UGenSpec.Rates.Set(Set(audio, control, scalar)),
@@ -137,7 +137,7 @@ object ScalaColliderDOT {
               Input("a", Input.Single), Input("b", Input.Single)
             ), outputs = Vector(
               Output(name = None, shape = SignalShape.Generic, variadic = None)
-            ), doc = None)
+            ), doc = None, elemOption = None)
         )
       res
     } catch {
