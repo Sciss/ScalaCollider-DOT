@@ -3,7 +3,7 @@
  *  (ScalaCollider-DOT)
  *
  *  Copyright (c) 2016 Institute of Electronic Music and Acoustics, Graz.
- *  Written by Hanns Holger Rutz.
+ *  Copyright (c) 2017-2018 by Hanns Holger Rutz.
  *
  *	This software is published under the GNU Lesser General Public License v2.1+
  *
@@ -20,9 +20,9 @@ import java.util.Locale
 
 import de.sciss.synth.UGenSpec.{Argument, ArgumentType, Input, Output, SignalShape}
 import de.sciss.synth.ugen.{BinaryOpUGen, Constant, UnaryOpUGen}
-import de.sciss.synth.{UGenGraph, UGenSpec, UndefinedRate, audio, control, scalar, demand}
+import de.sciss.synth.{UGenGraph, UGenSpec, UndefinedRate, audio, control, demand, scalar}
 
-import scala.collection.{breakOut, SortedMap}
+import scala.collection.{SortedMap, breakOut}
 import scala.language.implicitConversions
 import scala.util.control.NonFatal
 
