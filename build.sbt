@@ -1,8 +1,8 @@
 lazy val baseName  = "ScalaCollider-DOT"
 lazy val baseNameL = baseName.toLowerCase
 
-lazy val projectVersion = "0.6.0"
-lazy val mimaVersion    = "0.6.0"
+lazy val projectVersion = "0.7.0-SNAPSHOT"
+lazy val mimaVersion    = "0.7.0"
 
 name               := baseName
 version            := projectVersion
@@ -17,7 +17,7 @@ mimaPreviousArtifacts := Set("at.iem" %% baseNameL % mimaVersion)
 
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xfuture", "-Xlint")
 
-lazy val scalaColliderVersion = "1.24.0"
+lazy val scalaColliderVersion = "1.25.0-SNAPSHOT"
 lazy val ugensVersion         = "1.18.0"
 
 libraryDependencies ++= Seq(
