@@ -1,13 +1,13 @@
 lazy val baseName  = "ScalaCollider-DOT"
 lazy val baseNameL = baseName.toLowerCase
 
-lazy val projectVersion = "0.9.0"
-lazy val mimaVersion    = "0.9.0"
+lazy val projectVersion = "0.10.0-SNAPSHOT"
+lazy val mimaVersion    = "0.10.0"
 
 lazy val deps = new {
  val main = new {
-   val scalaCollider = "1.27.0"
-   val ugens         = "1.19.0"
+   val scalaCollider = "1.28.0-SNAPSHOT"
+   val ugens         = "1.19.2-SNAPSHOT"
   }
 }
 
@@ -17,10 +17,10 @@ lazy val root = project.withId(baseNameL).in(file("."))
     version            := projectVersion,
     organization       := "de.sciss",
     description        := "Utility for exporting a ScalaCollider UGen Graph as GraphViz .dot file",
-    homepage           := Some(url(s"https://github.com/Sciss/${name.value}")),
+    homepage           := Some(url(s"https://git.iem.at/sciss/${name.value}")),
     licenses           := Seq("lgpl" -> url("https://www.gnu.org/licenses/lgpl-2.1.txt")),
-    scalaVersion       := "2.12.6",
-    crossScalaVersions := Seq("2.12.6", "2.11.12"),
+    scalaVersion       := "2.13.0-M5",
+    crossScalaVersions := Seq("2.12.8", "2.11.12", "2.13.0-M5"),
     mimaPreviousArtifacts := Set(organization.value %% baseNameL % mimaVersion),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xfuture", "-Xlint"),
     libraryDependencies ++= Seq(
@@ -44,8 +44,8 @@ lazy val publishSettings = Seq(
   pomIncludeRepository := { _ => false },
   pomExtra := { val n = name.value
 <scm>
-  <url>git@github.com:Sciss/{n}.git</url>
-  <connection>scm:git:git@github.com:Sciss/{n}.git</connection>
+  <url>git@git.iem.at:sciss/{n}.git</url>
+  <connection>scm:git:git@git.iem.at:sciss/{n}.git</connection>
 </scm>
 <developers>
   <developer>

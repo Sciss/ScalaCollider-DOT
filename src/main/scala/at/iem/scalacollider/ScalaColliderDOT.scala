@@ -22,7 +22,7 @@ import de.sciss.synth.UGenSpec.{Argument, ArgumentType, Input, Output, SignalSha
 import de.sciss.synth.ugen.{BinaryOpUGen, Constant, UnaryOpUGen}
 import de.sciss.synth.{UGenGraph, UGenSpec, UndefinedRate, audio, control, demand, scalar}
 
-import scala.collection.{SortedMap, breakOut}
+import scala.collection.SortedMap
 import scala.language.implicitConversions
 import scala.util.control.NonFatal
 
@@ -157,7 +157,13 @@ object ScalaColliderDOT {
   def apply(config: Config): String = {
     import config._
     val cs = input.constants
-    val cn = input.controlNames.map(_.swap)(breakOut): SortedMap[Int, String]
+    val cnB = SortedMap.newBuilder[Int, String]
+    val cnV = input.controlNames
+    cnB.sizeHint(cnV.size)
+    cnV.foreach { tup =>
+      cnB += tup.swap
+    }
+    val cn = cnB.result()
     val nf = NumberFormat.getInstance(Locale.US)
     nf.setMaximumFractionDigits(4)
     nf.setGroupingUsed(false)
