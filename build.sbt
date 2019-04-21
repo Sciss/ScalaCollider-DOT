@@ -1,12 +1,12 @@
 lazy val baseName  = "ScalaCollider-DOT"
 lazy val baseNameL = baseName.toLowerCase
 
-lazy val projectVersion = "0.10.0"
+lazy val projectVersion = "0.10.1"
 lazy val mimaVersion    = "0.10.0"
 
 lazy val deps = new {
  val main = new {
-   val scalaCollider = "1.28.0"
+   val scalaCollider = "1.28.2"
    val ugens         = "1.19.2"
   }
 }
@@ -19,10 +19,10 @@ lazy val root = project.withId(baseNameL).in(file("."))
     description        := "Utility for exporting a ScalaCollider UGen Graph as GraphViz .dot file",
     homepage           := Some(url(s"https://git.iem.at/sciss/${name.value}")),
     licenses           := Seq("lgpl" -> url("https://www.gnu.org/licenses/lgpl-2.1.txt")),
-    scalaVersion       := "2.13.0-M5",
-    crossScalaVersions := Seq("2.12.8", "2.11.12", "2.13.0-M5"),
+    scalaVersion       := "2.12.8",
+    crossScalaVersions := Seq("2.12.8", "2.11.12", "2.13.0-RC1"),
     mimaPreviousArtifacts := Set(organization.value %% baseNameL % mimaVersion),
-    scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xfuture", "-Xlint"),
+    scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xlint", "-Xsource:2.13"),
     libraryDependencies ++= Seq(
       "de.sciss" %% "scalacollider"           % deps.main.scalaCollider,
       "de.sciss" %  "scalacolliderugens-spec" % deps.main.ugens
