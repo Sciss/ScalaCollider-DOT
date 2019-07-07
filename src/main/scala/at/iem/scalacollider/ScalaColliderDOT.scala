@@ -1,9 +1,8 @@
 /*
- *  Dimension.scala
+ *  ScalaColliderDOT.scala
  *  (ScalaCollider-DOT)
  *
- *  Copyright (c) 2016 Institute of Electronic Music and Acoustics, Graz.
- *  Copyright (c) 2017-2018 by Hanns Holger Rutz.
+ *  Copyright (c) 2016-2019 Hanns Holger Rutz. All rights reserved.
  *
  *	This software is published under the GNU Lesser General Public License v2.1+
  *
@@ -224,8 +223,8 @@ object ScalaColliderDOT {
         nodeBuilder.append("      </TR><TR>\n")
       }
       val ugenName1 = ugenName0 match {
-        case "UnaryOpUGen"  => UnaryOpUGen .Op(iu.ugen.specialIndex).name.toLowerCase(Locale.US)
-        case "BinaryOpUGen" => BinaryOpUGen.Op(iu.ugen.specialIndex).name.toLowerCase(Locale.US)
+        case "UnaryOpUGen"  => UnaryOpUGen .Op(iu.ugen.specialIndex).name
+        case "BinaryOpUGen" => BinaryOpUGen.Op(iu.ugen.specialIndex).name
         case other => other
       }
       val ugenName = escapeHTML(ugenName1)
