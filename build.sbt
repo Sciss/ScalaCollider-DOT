@@ -1,13 +1,13 @@
 lazy val baseName  = "ScalaCollider-DOT"
 lazy val baseNameL = baseName.toLowerCase
 
-lazy val projectVersion = "1.0.0-SNAPSHOT"
+lazy val projectVersion = "1.0.0"
 lazy val mimaVersion    = "1.0.0"
 
 lazy val deps = new {
  val main = new {
-   val scalaCollider = "2.0.0-SNAPSHOT"
-   val ugens         = "1.19.5"
+   val scalaCollider = "2.0.0"
+   val ugens         = "1.19.8"
   }
 }
 
@@ -20,7 +20,7 @@ lazy val root = project.withId(baseNameL).in(file("."))
     homepage           := Some(url(s"https://git.iem.at/sciss/${name.value}")),
     licenses           := Seq("lgpl" -> url("https://www.gnu.org/licenses/lgpl-2.1.txt")),
     scalaVersion       := "2.13.3",
-    crossScalaVersions := Seq("2.13.3", "2.12.12"),
+    crossScalaVersions := Seq("0.27.0-RC1", "2.13.3", "2.12.12"),
     mimaPreviousArtifacts := Set(organization.value %% baseNameL % mimaVersion),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xlint", "-Xsource:2.13"),
     libraryDependencies ++= Seq(
