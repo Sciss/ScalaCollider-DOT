@@ -17,13 +17,14 @@ The following artifact is available from Maven Central:
 
     "de.sciss" %% "scalacollider-dot" % v
 
-The current stable version `v` is `"1.0.0"`.
+The current stable version `v` is `"1.1.0"`.
 
 ## building
 
-This project builds with sbt and Scala 2.13, 2.12. The last version to support
-Scala 2.11 was v0.10.4. To compile `sbt test:compile`.
-To print the test output, `sbt test:run`.
+This project builds with sbt and Scala 2.13, 2.12, Dotty.
+The last version to support Scala 2.11 was v0.10.4.
+
+To compile `sbt test:compile`. To print the test output, `sbt test:run`.
 
 ## contributing
 
