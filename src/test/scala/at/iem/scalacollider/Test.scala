@@ -9,6 +9,7 @@ object Test extends App {
     val f   = LFSaw.kr(0.4).mulAdd(24, LFSaw.kr(Seq(8.0, 7.23)).mulAdd(3, 80)).midiCps
     val sig = CombN.ar(SinOsc.ar(f) * 0.04, 0.2, 0.2, 4)
     Out.ar(0, sig)
+    ()
   }
 
   val policeState = SynthDef("police state") {
@@ -29,6 +30,7 @@ object Test extends App {
       0.3, 0.3, 3
     )
     WrapOut(sig)
+    ()
   }
 
   def printDef(sd: SynthDef): Unit = {

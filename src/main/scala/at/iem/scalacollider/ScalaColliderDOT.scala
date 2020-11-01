@@ -99,6 +99,7 @@ object ScalaColliderDOT {
 
     } finally {
       dotFile.delete()
+      ()
     }
   }
 
