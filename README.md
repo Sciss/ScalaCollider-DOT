@@ -5,7 +5,7 @@
 
 A utility that translates a [ScalaCollider](https://git.iem.at/sciss/ScalaCollider) UGen graph into a GraphViz .dot file.
 This project is (C)opyright 2016&ndash;2020 by Hanns Holger Rutz. All rights reserved.
-It is published under the GNU Lesser General Public License v2.1+.
+It is published under the GNU Affero General Public License v3+.
 
 See `src/test` for an example usage.
 
@@ -17,7 +17,7 @@ The following artifact is available from Maven Central:
 
     "de.sciss" %% "scalacollider-dot" % v
 
-The current stable version `v` is `"1.1.0"`.
+The current stable version `v` is `"1.2.0"`.
 
 ## building
 
