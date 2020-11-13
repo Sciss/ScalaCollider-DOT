@@ -17,7 +17,7 @@ The following artifact is available from Maven Central:
 
     "de.sciss" %% "scalacollider-dot" % v
 
-The current stable version `v` is `"1.2.0"`.
+The current stable version `v` is `"1.3.0"`.
 
 ## building
 

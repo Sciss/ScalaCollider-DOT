@@ -1,12 +1,12 @@
 lazy val baseName  = "ScalaCollider-DOT"
 lazy val baseNameL = baseName.toLowerCase
 
-lazy val projectVersion = "1.2.0"
-lazy val mimaVersion    = "1.2.0"
+lazy val projectVersion = "1.3.0"
+lazy val mimaVersion    = "1.3.0"
 
 lazy val deps = new {
  val main = new {
-   val scalaCollider = "2.2.0"
+   val scalaCollider = "2.3.0"
    val ugens         = "1.20.0"
   }
 }
