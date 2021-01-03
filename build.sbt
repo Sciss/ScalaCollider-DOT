@@ -1,12 +1,12 @@
 lazy val baseName  = "ScalaCollider-DOT"
 lazy val baseNameL = baseName.toLowerCase
 
-lazy val projectVersion = "1.4.1"
-lazy val mimaVersion    = "1.4.0"
+lazy val projectVersion = "1.5.0"
+lazy val mimaVersion    = "1.5.0"
 
 lazy val deps = new {
  val main = new {
-   val scalaCollider = "2.4.1"
+   val scalaCollider = "2.5.0"
    val ugens         = "1.20.1"
   }
 }
@@ -26,10 +26,16 @@ lazy val root = project.withId(baseNameL).in(file("."))
     scalaVersion       := "2.13.4",
     crossScalaVersions := Seq("3.0.0-M2", "2.13.4", "2.12.12"),
     mimaPreviousArtifacts := Set(organization.value %% baseNameL % mimaVersion),
-    scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xlint", "-Xsource:2.13"),
+    scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8"),
+    scalacOptions ++= {
+      if (isDotty.value) Nil else Seq("-Xlint", "-Xsource:2.13")
+    },
     scalacOptions ++= {
       val sv = scalaVersion.value
       if (sv.startsWith("2.13.")) "-Wvalue-discard" :: Nil else Nil
+    },
+    sources in (Compile, doc) := {
+      if (isDotty.value) Nil else (sources in (Compile, doc)).value // dottydoc is complaining about something
     },
     libraryDependencies ++= Seq(
       "de.sciss" %% "scalacollider"           % deps.main.scalaCollider,
