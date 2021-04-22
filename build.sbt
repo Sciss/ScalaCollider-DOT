@@ -1,19 +1,20 @@
 lazy val baseName  = "ScalaCollider-DOT"
 lazy val baseNameL = baseName.toLowerCase
 
-lazy val projectVersion = "1.6.2"
+lazy val projectVersion = "1.6.3"
 lazy val mimaVersion    = "1.6.0"
 
 lazy val deps = new {
  val main = new {
-   val scalaCollider = "2.6.2"
+   val scalaCollider = "2.6.3"
    val ugens         = "1.21.1"
   }
 }
 
 // sonatype plugin requires that these are in global
-ThisBuild / version      := projectVersion
-ThisBuild / organization := "de.sciss"
+ThisBuild / version       := projectVersion
+ThisBuild / organization  := "de.sciss"
+ThisBuild / versionScheme := Some("pvp")
 
 lazy val root = project.withId(baseNameL).in(file("."))
   .settings(
@@ -23,8 +24,8 @@ lazy val root = project.withId(baseNameL).in(file("."))
     description        := "Utility for exporting a ScalaCollider UGen Graph as GraphViz .dot file",
     homepage           := Some(url(s"https://git.iem.at/sciss/${name.value}")),
     licenses           := Seq("AGPL v3+" -> url("http://www.gnu.org/licenses/agpl-3.0.txt")),
-    scalaVersion       := "2.13.4",
-    crossScalaVersions := Seq("3.0.0-RC1", "2.13.4", "2.12.13"),
+    scalaVersion       := "2.13.5",
+    crossScalaVersions := Seq("3.0.0-RC3", "2.13.5", "2.12.13"),
     mimaPreviousArtifacts := Set(organization.value %% baseNameL % mimaVersion),
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8"),
     scalacOptions ++= {
