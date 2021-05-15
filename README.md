@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/Sciss/ScalaCollider-DOT/workflows/Scala%20CI/badge.svg?branch=main)](https://github.com/Sciss/ScalaCollider-DOT/actions?query=workflow%3A%22Scala+CI%22)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.sciss/scalacollider-dot_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.sciss/scalacollider-dot_2.13)
 
-A utility that translates a [ScalaCollider](https://git.iem.at/sciss/ScalaCollider) UGen graph into a GraphViz .dot file.
+A utility that translates a [ScalaCollider](https://github.com/Sciss/ScalaCollider) UGen graph into a GraphViz .dot file.
 This project is (C)opyright 2016&ndash;2021 by Hanns Holger Rutz. All rights reserved.
 It is published under the GNU Affero General Public License v3+.
 
@@ -17,7 +17,7 @@ The following artifact is available from Maven Central:
 
     "de.sciss" %% "scalacollider-dot" % v
 
-The current stable version `v` is `"1.6.3"`.
+The current stable version `v` is `"1.6.4"`.
 
 ## building
 
